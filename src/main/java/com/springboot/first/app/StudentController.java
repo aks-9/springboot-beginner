@@ -1,45 +1,65 @@
-//* 4. REST API returns Java Bean (JSON) -2
+//* 7. Request / Query Parameter
 
-// We will create a REST end point that will return a Student Java Bean object to the client. 
-// For this we need to create a new controller class.
-// Select base package> right click> new > class > name it StudentController
+// // We will create a REST end point that will handle a request parameter in the web request URI.
+
+// This is StudentController file.
 
 
 package com.springboot.first.app;
 
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.PathVariable; 
+import org.springframework.web.bind.annotation.RequestParam; //importing
 import org.springframework.web.bind.annotation.RestController;
+import java.util.List; 
+import java.util.ArrayList; 
 
 @RestController
 public class StudentController {
 
-	// http://localhost:8080/student
-	@GetMapping("/student") // Makes this method a Rest api
+	@GetMapping("/student")
 	public Student getStudent() {
 		return new Student("Ashish", "Singh");
 	}
+	
+	@GetMapping("/students")
+	public List<Student> getStudents() {
+		
+		List<Student> students = new ArrayList<>();
+		
+		students.add(new Student("Ashish", "Singh"));
+		students.add(new Student("Prince", "Chaudhary"));
+		students.add(new Student("Agent", "Smith"));
+		students.add(new Student("Neo", "Anderson"));
+		students.add(new Student("Harvey", "Spector"));
+		
+		return students; 
+		
+	}
+	
+	@GetMapping("/student/{firstName}/{lastName}")
+	public Student studentPathVarible(@PathVariable String firstName, @PathVariable String lastName) {
+		return new Student(firstName, lastName);
+	}
+	
+	//* Build rest API to handle query parameters
+	// @RequestParam is used to bind the web request parameter to the method arguments.
+	// http://localhost:8080/student/query?firstName=Ashish&lastName=Singh
+	
+	@GetMapping("/student/query")
+	public Student studentQueryParam(@RequestParam String firstName, @RequestParam String lastName) {
+		return new Student(firstName, lastName);
+	}
+	
+	
 }
 
 /*
- Go to the base class SpringbootFirstAppApplication, right click on it, an run as Sprint boot app.
- Go to the http://localhost:8080/student 
- 
- and it should give a JSON as output:
- 
- OUTPUT: 
- 
- {"firstName":"Ashish","lastName":"Singh"}
- 
- 
- => Spring MVC internally uses the Jackson2 library and message converters, to convert Java objects into JSON.
- 
- @RestController internally uses @ResponseBody, and which uses HTTP message converters to convert the return value (Java Object)
- to HTTP response body (eg: JSON), based on the content-type in the HTTP request header.
- 
- This response as a JSON is returned to the client. 
- 
- => By default Spring MVC uses JSON as the representation format. We can configure it to XML as well like this:
- @GetMapping("/student", produces=MediaType.APPLICATION_XML_VALUE)
+
+http://localhost:8080/student/query?firstName=Ashish&lastName=Singh
+
+Output:
+  
+{"firstName":"Ashish","lastName":"Singh"}
  
 */
